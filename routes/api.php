@@ -17,7 +17,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::apiResource('/books', BookController::class);
+Route::controller(BookController::class)->group(function() {
+    Route::get('/books', 'index');
+    Route::post('/books', 'store');
+    Route::get('/books/{id}', 'show');
+    Route::put('/books/{id}', 'update');
+    Route::delete('/books/{id}', 'destroy');
+    Route::get('/books/find/{name}', 'find');
+});
 
 Route::controller(CategoryController::class)->group(function() {
     Route::get("/category", 'index');

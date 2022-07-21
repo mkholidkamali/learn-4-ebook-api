@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Book;
 use App\Http\Requests\StoreBookRequest;
 use App\Http\Requests\UpdateBookRequest;
+use App\Http\Resources\BookResources;
 
 class BookController extends Controller
 {
@@ -15,7 +16,7 @@ class BookController extends Controller
      */
     public function index()
     {
-        return Book::all();
+        return BookResources::collection(Book::all());
     }
 
     /**
@@ -26,7 +27,8 @@ class BookController extends Controller
      */
     public function store(StoreBookRequest $request)
     {
-        return Book::create($request);
+        $result = Book::create($request->all());
+        return new BookResources($result);
     }
 
     /**
@@ -35,9 +37,10 @@ class BookController extends Controller
      * @param  \App\Models\Book  $book
      * @return \Illuminate\Http\Response
      */
-    public function show(Book $book)
+    public function show(int $id)
     {
-        //
+        $result = Book::find($id);
+        return new BookResources($result);
     }
 
     /**
@@ -47,9 +50,11 @@ class BookController extends Controller
      * @param  \App\Models\Book  $book
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateBookRequest $request, Book $book)
+    public function update(UpdateBookRequest $request, int $id)
     {
-        //
+        $book = Book::find($id);
+        $book->update($request->all());
+        return new BookResources($book);
     }
 
     /**
@@ -58,8 +63,15 @@ class BookController extends Controller
      * @param  \App\Models\Book  $book
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Book $book)
+    public function destroy(int $id)
     {
-        //
+        Book::destroy($id);
+        return response('', 204);
+    }
+
+    public function find(string $name)
+    {
+        $result = Book::where('name', 'like', "%$name%")->first();
+        return new BookResources($result);
     }
 }
