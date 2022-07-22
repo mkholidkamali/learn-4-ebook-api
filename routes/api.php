@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::controller(BookController::class)->group(function() {
-    // Guest
+    // Public
     Route::get('/books', 'index');
     // Auth
     Route::middleware('auth:sanctum')->group(function() {
@@ -32,23 +32,27 @@ Route::controller(BookController::class)->group(function() {
 });
 
 Route::controller(CategoryController::class)->group(function() {
+    // Public
     Route::get("/category", 'index');
-    Route::post("/category", 'store');
-    Route::get("/category/{id}", 'show');
-    Route::put("/category/{id}", 'update');
-    Route::delete("/category/{id}", 'destroy');
-    Route::get("/category/find/{name}", 'find');
+    // Auth
+    Route::middleware('auth:sanctum')->group(function() {
+        Route::post("/category", 'store');
+        Route::get("/category/{id}", 'show');
+        Route::put("/category/{id}", 'update');
+        Route::delete("/category/{id}", 'destroy');
+        Route::get("/category/find/{name}", 'find');
+    });
 });
 
-// Guest
 Route::controller(AuthController::class)->group(function() {
+    // Public
     Route::post('/register', 'register');
     Route::post('/login', 'login');
     Route::get('/users', 'all');
-});
-// Auth
-Route::middleware('auth:sanctum')->controller(AuthController::class)->group(function() {
-    Route::post('/logout', 'logout');
+    // Auth
+    Route::middleware('auth:sanctum')->group(function() {
+        Route::post('/logout', 'logout');
+    });
 });
 
 
